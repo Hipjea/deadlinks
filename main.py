@@ -3,13 +3,14 @@ import requests
 import yaml
 
 
+filepath = 'parcours-hybridation/arts-lettres-et-langues/36-licence-mention-humanites.yml'
 csvfile = open('results.csv', 'w')
 header = ['url', 'status']
 
 writer = csv.writer(csvfile)
 writer.writerow(header)
 
-with open('parcours-hybridation/arts-lettres-et-langues/36-licence-mention-humanites.yml', 'r') as f:
+with open(filepath, 'r') as f:
     doc = yaml.safe_load(f)
 
     for element in doc["years"] :
