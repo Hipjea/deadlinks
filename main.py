@@ -45,3 +45,5 @@ for file in glob.glob(f'{filepath}/**/*.yml', recursive=True):
             except BaseException as err:
                 print(f"Unexpected {err=}, {type(err)=}")
                 raise
+
+csvfile.close()
