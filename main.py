@@ -11,7 +11,7 @@ load_dotenv(dotenv_path)
 
 filepath = os.getenv('DIRECTORY')
 csvfile = open('results.csv', 'w')
-header = ['url', 'status']
+header = ['status', 'url']
 
 # Write the CSV headers
 writer = csv.writer(csvfile)
@@ -30,15 +30,15 @@ for file in glob.glob(f'{filepath}/**/*.yml', recursive=True):
                             try:
                                 r = requests.get(resource["url"])
                                 if r.status_code != 200:
-                                    writer.writerow([resource["url"], r.status_code])
+                                    writer.writerow([r.status_code, resource["url"]])
                             except requests.ConnectionError:
                                 print("failed to connect : ", resource["url"])
                                 try:
                                     r = requests.get(resource["url"], verify=False)
                                     if r.status_code != 200:
-                                        writer.writerow([resource["url"], r.status_code])
+                                        writer.writerow([r.status_code, resource["url"]])
                                 except requests.ConnectionError:
-                                    writer.writerow([resource["url"], r.status_code])
+                                    writer.writerow([r.status_code, resource["url"]])
             except BaseException as err:
                 print(f"Unexpected {err=}, {type(err)=}")
                 raise
