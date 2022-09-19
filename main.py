@@ -13,6 +13,8 @@ filepath = os.getenv('DIRECTORY')
 csvfile = open('results.csv', 'w')
 header = ['status', 'url']
 
+structure = ['years', 'ue', 'resources', 'url']
+
 # Write the CSV headers
 writer = csv.writer(csvfile)
 writer.writerow(header)
@@ -24,21 +26,22 @@ for file in glob.glob(f'{filepath}/**/*.yml', recursive=True):
 
         if doc.get('years'):
             try:
-                for element in doc["years"]:
-                    for ue in element["ue"]:
-                        for resource in ue["resources"]:
+                for element in doc[structure[0]]:
+                    for ue in element[structure[1]]:
+                        for resource in ue[structure[2]]:
                             try:
-                                r = requests.get(resource["url"])
+                                url = resource[structure[-1]]
+                                r = requests.get(url)
+                                print(f"URL: {url}")
                                 if r.status_code != 200:
-                                    writer.writerow([r.status_code, resource["url"]])
+                                    writer.writerow([r.status_code, url])
                             except requests.ConnectionError:
-                                print("failed to connect : ", resource["url"])
                                 try:
-                                    r = requests.get(resource["url"], verify=False)
+                                    r = requests.get(url, verify=False)
                                     if r.status_code != 200:
-                                        writer.writerow([r.status_code, resource["url"]])
+                                        writer.writerow([r.status_code, url])
                                 except requests.ConnectionError:
-                                    writer.writerow([r.status_code, resource["url"]])
+                                    writer.writerow([r.status_code, url])
             except BaseException as err:
                 print(f"Unexpected {err=}, {type(err)=}")
                 raise
