@@ -28,20 +28,21 @@ for file in glob.glob(f'{filepath}/**/*.yml', recursive=True):
             try:
                 for element in doc[structure[0]]:
                     for ue in element[structure[1]]:
-                        for resource in ue[structure[2]]:
-                            try:
-                                url = resource[structure[-1]]
-                                r = requests.get(url)
-                                print(f"URL: {url}")
-                                if r.status_code != 200:
-                                    writer.writerow([r.status_code, url])
-                            except requests.ConnectionError:
+                        if ue.get(structure[2]):
+                            for resource in ue[structure[2]]:
                                 try:
-                                    r = requests.get(url, verify=False)
+                                    url = resource[structure[-1]]
+                                    r = requests.get(url)
+                                    print(f"URL: {url}")
                                     if r.status_code != 200:
                                         writer.writerow([r.status_code, url])
                                 except requests.ConnectionError:
-                                    writer.writerow([r.status_code, url])
+                                    try:
+                                        r = requests.get(url, verify=False)
+                                        if r.status_code != 200:
+                                            writer.writerow([r.status_code, url])
+                                    except requests.ConnectionError:
+                                        writer.writerow([r.status_code, url])
             except BaseException as err:
                 print(f"Unexpected {err=}, {type(err)=}")
                 raise
