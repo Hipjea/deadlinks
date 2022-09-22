@@ -32,16 +32,20 @@ for file in glob.glob(f'{filepath}/**/*.yml', recursive=True):
                             for resource in ue[structure[2]]:
                                 try:
                                     url = resource[structure[-1]]
-                                    r = requests.get(url)
+                                    try:
+                                        r = requests.get(url, timeout=20)
+                                    except requests.exceptions.RequestException as e:
+                                        print(f"Timeout -> {url}")
                                     print(f"URL: {url}")
                                     if r.status_code != 200:
                                         writer.writerow([r.status_code, url])
                                 except requests.ConnectionError:
                                     try:
-                                        r = requests.get(url, verify=False)
-                                        if r.status_code != 200:
-                                            writer.writerow([r.status_code, url])
-                                    except requests.ConnectionError:
+                                        r = requests.get(url, verify=False, timeout=20)
+                                    except requests.exceptions.RequestException as e:
+                                        print(f"Timeout -> {url}")
+                                        writer.writerow([r.status_code, url])
+                                    if r.status_code != 200:
                                         writer.writerow([r.status_code, url])
             except BaseException as err:
                 print(f"Unexpected {err=}, {type(err)=}")
