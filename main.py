@@ -13,8 +13,6 @@ filepath = os.getenv('DIRECTORY')
 csvfile = open('results.csv', 'w')
 header = ['status', 'url']
 
-structure = ['years', 'ue', 'resources', 'url']
-
 # Write the CSV headers
 writer = csv.writer(csvfile)
 writer.writerow(header)
@@ -26,12 +24,12 @@ for file in glob.glob(f'{filepath}/**/*.yml', recursive=True):
 
         if doc.get('years'):
             try:
-                for element in doc[structure[0]]:
-                    for ue in element[structure[1]]:
-                        if ue.get(structure[2]):
-                            for resource in ue[structure[2]]:
+                for element in doc['years']:
+                    for ue in element['ue']:
+                        if ue.get('resources'):
+                            for resource in ue['resources']:
                                 try:
-                                    url = resource[structure[-1]]
+                                    url = resource['url']
                                     try:
                                         r = requests.get(url, timeout=20)
                                     except requests.exceptions.RequestException as e:
