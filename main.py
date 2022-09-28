@@ -9,6 +9,8 @@ from dotenv import load_dotenv
 dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
 load_dotenv(dotenv_path)
 
+TIMEOUT_DELAY = 20
+
 filepath = os.getenv('DIRECTORY')
 csvfile = open('results.csv', 'w')
 header = ['status', 'url']
@@ -31,7 +33,7 @@ for file in glob.glob(f'{filepath}/**/*.yml', recursive=True):
                                 try:
                                     url = resource['url']
                                     try:
-                                        r = requests.get(url, timeout=20)
+                                        r = requests.get(url, timeout=TIMEOUT_DELAY)
                                     except requests.exceptions.RequestException as e:
                                         print(f"Timeout -> {url}")
                                     print(f"URL: {url}")
@@ -39,7 +41,7 @@ for file in glob.glob(f'{filepath}/**/*.yml', recursive=True):
                                         writer.writerow([r.status_code, url])
                                 except requests.ConnectionError:
                                     try:
-                                        r = requests.get(url, verify=False, timeout=20)
+                                        r = requests.get(url, verify=False, timeout=TIMEOUT_DELAY)
                                     except requests.exceptions.RequestException as e:
                                         print(f"Timeout -> {url}")
                                         writer.writerow([r.status_code, url])
