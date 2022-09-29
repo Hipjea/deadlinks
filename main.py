@@ -33,18 +33,21 @@ for file in glob.glob(f'{filepath}/**/*.yml', recursive=True):
                             if ue.get('resources'):
                                 for resource in ue['resources']:
                                     try:
-                                        url = resource['url']
-                                        # Append the resource URL to unique_urls
-                                        if not url in unique_urls:
-                                            unique_urls.append(url)
-                                            try:
-                                                r = requests.get(url, timeout=TIMEOUT_DELAY)
-                                                print(f"URL: {url}")
-                                                if r.status_code != 200:
-                                                    writer.writerow([url, r.status_code])
-                                            except requests.exceptions.RequestException as e:
-                                                print(f"Timeout -> {url}")
-                                                writer.writerow([url], e)
+                                        if resource.get('url'):
+                                            url = resource['url']
+                                            # Append the resource URL to unique_urls
+                                            if not url in unique_urls:
+                                                unique_urls.append(url)
+                                                try:
+                                                    r = requests.get(url, timeout=TIMEOUT_DELAY)
+                                                    print(f"URL: {url}")
+                                                    if r.status_code != 200:
+                                                        writer.writerow([url, r.status_code])
+                                                except requests.exceptions.RequestException as e:
+                                                    print(f"Timeout -> {url}")
+                                                    writer.writerow([url, e])
+                                        else:
+                                            writer.writerow([url, 'URL manquante'])
                                     except requests.ConnectionError:
                                         try:
                                             r = requests.get(url, verify=False, timeout=TIMEOUT_DELAY)
