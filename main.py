@@ -93,8 +93,8 @@ if has_smtp():
         message.attach(MIMEText(text))
 
         with open(filename, "rb") as file:
-            part = MIMEApplication(file.read(), Name=os.basename(file))
-        part['Content-Disposition'] = 'attachment; filename="%s"' % os.basename(file)
+            part = MIMEApplication(file.read(), Name=os.path.basename(file))
+        part['Content-Disposition'] = 'attachment; filename="%s"' % os.path.basename(file)
         message.attach(part)
 
         server.login(smtp_user, smtp_pass)
