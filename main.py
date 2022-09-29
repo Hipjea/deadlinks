@@ -13,7 +13,8 @@ TIMEOUT_DELAY = 20
 
 filepath = os.getenv('DIRECTORY')
 csvfile = open('results.csv', 'w')
-header = ['status', 'url']
+header = ['url', 'status']
+unique_urls = []
 
 # Write the CSV headers
 writer = csv.writer(csvfile)
@@ -33,24 +34,28 @@ for file in glob.glob(f'{filepath}/**/*.yml', recursive=True):
                                 for resource in ue['resources']:
                                     try:
                                         url = resource['url']
-                                        try:
-                                            r = requests.get(url, timeout=TIMEOUT_DELAY)
-                                            print(f"URL: {url}")
-                                            if r.status_code != 200:
-                                                writer.writerow([r.status_code, url])
-                                        except requests.exceptions.RequestException as e:
-                                            print(f"Timeout -> {url}")
-                                            writer.writerow([e, url])
+                                        # Append the resource URL to unique_urls
+                                        if not url in unique_urls:
+                                            unique_urls.append(url)
+                                            try:
+                                                r = requests.get(url, timeout=TIMEOUT_DELAY)
+                                                print(f"URL: {url}")
+                                                if r.status_code != 200:
+                                                    writer.writerow([url, r.status_code])
+                                            except requests.exceptions.RequestException as e:
+                                                print(f"Timeout -> {url}")
+                                                writer.writerow([url], e)
                                     except requests.ConnectionError:
                                         try:
                                             r = requests.get(url, verify=False, timeout=TIMEOUT_DELAY)
                                         except requests.exceptions.RequestException as e:
                                             print(f"Timeout -> {url}")
-                                            writer.writerow([r.status_code, url])
+                                            writer.writerow([url, r.status_code])
                                         if r.status_code != 200:
-                                            writer.writerow([r.status_code, url])
+                                            writer.writerow([url, r.status_code])
             except BaseException as err:
                 print(f"Unexpected {err=}, {type(err)=}")
                 raise
 
 csvfile.close()
+print("nombre d'URL :", len(unique_urls))
