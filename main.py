@@ -15,20 +15,11 @@ load_dotenv(dotenv_path)
 
 TIMEOUT_DELAY = 20
 
-def has_smtp(user, password):
-    if user and password:
-        return True
-    return False
-
-
 filename = 'results.csv'
 filepath = os.getenv('DIRECTORY')
 csvfile = open(filename, 'w')
 header = ['url', 'status']
 unique_urls = []
-
-smtp_user = os.getenv('SMTP_USER')
-smtp_pass = os.getenv('SMTP_PASS')
 
 # Write the CSV headers
 writer = csv.writer(csvfile)
@@ -77,13 +68,15 @@ for file in glob.glob(f'{filepath}/**/*.yml', recursive=True):
 csvfile.close()
 print("Nombre de liens parcourus :", len(unique_urls))
 
-if has_smtp(smtp_user, smtp_pass):
-    # Send the infos by email
-    smtp_host = os.getenv('SMTP_HOST')
-    smtp_port = os.getenv('SMTP_PORT')
-    sender = os.getenv('SENDER')
-    receiver = os.getenv('RECEIVER')
+# Send the infos by email
+smtp_user = os.getenv('SMTP_USER')
+smtp_pass = os.getenv('SMTP_PASS')
+smtp_host = os.getenv('SMTP_HOST')
+smtp_port = os.getenv('SMTP_PORT')
+sender = os.getenv('SENDER')
+receiver = os.getenv('RECEIVER')
 
+if smtp_user and smtp_pass:
     with smtplib.SMTP(smtp_host, smtp_port) as server:
         text = 'Détection des liens morts'
         message = MIMEMultipart()
