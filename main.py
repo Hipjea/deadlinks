@@ -75,10 +75,9 @@ for file in glob.glob(f'{filepath}/**/*.yml', recursive=True):
                 raise
 
 csvfile.close()
-print("nombre d'URL :", len(unique_urls))
+print("Nombre de liens parcourus :", len(unique_urls))
 
 if has_smtp(smtp_user, smtp_pass):
-    print("True")
     # Send the infos by email
     smtp_host = os.getenv('SMTP_HOST')
     smtp_port = os.getenv('SMTP_PORT')
@@ -91,7 +90,7 @@ if has_smtp(smtp_user, smtp_pass):
         message['Subject'] = text
         message['From'] = sender
         message['To'] = receiver
-        message.attach(MIMEText(text))
+        message.attach(MIMEText(text + '\n\n' + 'Nombre de liens parcourus : ' + str(len(unique_urls)) + '\n\n'))
 
         with open(filename, "rb") as file:
             part = MIMEApplication(file.read(), Name=filename)
