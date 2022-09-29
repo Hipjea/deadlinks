@@ -27,26 +27,28 @@ for file in glob.glob(f'{filepath}/**/*.yml', recursive=True):
         if doc.get('years'):
             try:
                 for element in doc['years']:
-                    for ue in element['ue']:
-                        if ue.get('resources'):
-                            for resource in ue['resources']:
-                                try:
-                                    url = resource['url']
+                    if element.get('ue'):
+                        for ue in element['ue']:
+                            if ue.get('resources'):
+                                for resource in ue['resources']:
                                     try:
-                                        r = requests.get(url, timeout=TIMEOUT_DELAY)
-                                    except requests.exceptions.RequestException as e:
-                                        print(f"Timeout -> {url}")
-                                    print(f"URL: {url}")
-                                    if r.status_code != 200:
-                                        writer.writerow([r.status_code, url])
-                                except requests.ConnectionError:
-                                    try:
-                                        r = requests.get(url, verify=False, timeout=TIMEOUT_DELAY)
-                                    except requests.exceptions.RequestException as e:
-                                        print(f"Timeout -> {url}")
-                                        writer.writerow([r.status_code, url])
-                                    if r.status_code != 200:
-                                        writer.writerow([r.status_code, url])
+                                        url = resource['url']
+                                        try:
+                                            r = requests.get(url, timeout=TIMEOUT_DELAY)
+                                        except requests.exceptions.RequestException as e:
+                                            print(f"Timeout -> {url}")
+                                            writer.writerow([r.status_code, url])
+                                        print(f"URL: {url}")
+                                        if r.status_code != 200:
+                                            writer.writerow([r.status_code, url])
+                                    except requests.ConnectionError:
+                                        try:
+                                            r = requests.get(url, verify=False, timeout=TIMEOUT_DELAY)
+                                        except requests.exceptions.RequestException as e:
+                                            print(f"Timeout -> {url}")
+                                            writer.writerow([r.status_code, url])
+                                        if r.status_code != 200:
+                                            writer.writerow([r.status_code, url])
             except BaseException as err:
                 print(f"Unexpected {err=}, {type(err)=}")
                 raise
