@@ -35,12 +35,12 @@ for file in glob.glob(f'{filepath}/**/*.yml', recursive=True):
                                         url = resource['url']
                                         try:
                                             r = requests.get(url, timeout=TIMEOUT_DELAY)
+                                            print(f"URL: {url}")
+                                            if r.status_code != 200:
+                                                writer.writerow([r.status_code, url])
                                         except requests.exceptions.RequestException as e:
                                             print(f"Timeout -> {url}")
-                                            writer.writerow([r.status_code, url])
-                                        print(f"URL: {url}")
-                                        if r.status_code != 200:
-                                            writer.writerow([r.status_code, url])
+                                            writer.writerow([e, url])
                                     except requests.ConnectionError:
                                         try:
                                             r = requests.get(url, verify=False, timeout=TIMEOUT_DELAY)
