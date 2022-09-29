@@ -15,8 +15,8 @@ load_dotenv(dotenv_path)
 
 TIMEOUT_DELAY = 20
 
-def has_smtp():
-    if smtp_user and smtp_pass:
+def has_smtp(user, password):
+    if user and password:
         return True
     return False
 
@@ -77,7 +77,8 @@ for file in glob.glob(f'{filepath}/**/*.yml', recursive=True):
 csvfile.close()
 print("nombre d'URL :", len(unique_urls))
 
-if has_smtp():
+if has_smtp(smtp_user, smtp_pass):
+    print("True")
     # Send the infos by email
     smtp_host = os.getenv('SMTP_HOST')
     smtp_port = os.getenv('SMTP_PORT')
@@ -93,8 +94,9 @@ if has_smtp():
         message.attach(MIMEText(text))
 
         with open(filename, "rb") as file:
-            part = MIMEApplication(file.read(), Name=os.path.basename(file))
-        part['Content-Disposition'] = 'attachment; filename="%s"' % os.path.basename(file)
+            part = MIMEApplication(file.read(), Name=filename)
+            file.close()
+        part['Content-Disposition'] = 'attachment; filename="%s"' % filename
         message.attach(part)
 
         server.login(smtp_user, smtp_pass)
